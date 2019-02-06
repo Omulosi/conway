@@ -8,10 +8,10 @@ import random
 # GLOBAL VARIABLES
 ############################################################
     
-BLOCK_SIZE = 40
+BLOCK_SIZE = 20
 BLOCK_OUTLINE_WIDTH = 2
-BOARD_WIDTH = 12
-BOARD_HEIGHT = 12
+BOARD_WIDTH = 25
+BOARD_HEIGHT = 25
 
 neighbor_test_blocklist = [(0,0), (1,1)]
 toad_blocklist = [(4,4), (3,5), (3,6), (5,7), (6,5), (6,6)]
@@ -257,8 +257,25 @@ class Board(object):
            to call reset_status(self.canvas) on each block.
         '''
 
-        #### YOUR CODE HERE #####
-        raise Exception("simulate not implemented")
+        all_blocks = self.block_list.values()
+        for block in all_blocks:
+            neighbors = self.get_block_neighbors(block)
+            live_neighbors = len(filter(lambda blk: blk.status == 'live',
+                neighbors))
+            if block.status == 'live':
+                if live_neighbors < 2:
+                    block.new_status = 'dead'
+                if live_neighbors > 3:
+                    block.new_status = 'dead'
+                if live_neighbors == 2 or live_neighbors == 3:
+                    pass
+            if block.status == 'dead':
+                if live_neighbors == 3:
+                    block.new_status = 'live'
+
+        for block in all_blocks:
+            block.reset_status(self.canvas)
+
 
         
 
@@ -290,17 +307,17 @@ if __name__ == '__main__':
 
     ## PART 3: Test that neighbors work by commenting the above and uncommenting
     ## the following two lines:
-    board.seed(neighbor_test_blocklist)
-    test_neighbors(board)
+    #board.seed(neighbor_test_blocklist)
+    #test_neighbors(board)
 
 
     ## PART 4: Test that simulate() works by uncommenting the next two lines:
-    # board.seed(toad_blocklist)
-    # win.after(2000, board.simulate)
+    board.seed(diehard_blocklist)
+    win.after(2000, board.simulate)
 
     ## PART 5: Try animating! Comment out win.after(2000, board.simulate) above, and
     ## uncomment win.after below.
-    # win.after(2000, board.animate)
+    win.after(2000, board.animate)
 
     ## Yay, you're done! Try seeding with different blocklists (a few are provided at the top of this file!)
     
