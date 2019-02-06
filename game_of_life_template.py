@@ -179,9 +179,10 @@ class Board(object):
         # dictionary (self.block_list) that has key:value pairs of
         # (x,y):Block will be useful here.
         self.block_list = {}
-
-        ####### YOUR CODE HERE ######
-        raise Exception("__init__ not implemented")
+        coords = [(x,y) for x in range(BOARD_WIDTH) for y in
+                range(BOARD_HEIGHT)]
+        for key in coords:
+            self.block_list[key] = Block(Point(*key), 'blue')
 
 
     def draw_gridline(self, startp, endp):
@@ -215,21 +216,32 @@ class Board(object):
         Takes in a list of (x, y) tuples representing block coordinates,
         and activates the blocks corresponding to those coordinates.
         '''
+        for coord in block_coords:
+            self.block_list[coord].set_live(self.canvas)
 
-        #### YOUR CODE HERE #####
-        raise Exception("seed not implemented")
     
-
-
     def get_block_neighbors(self, block):
         '''
         Given a Block object, returns a list of neighboring blocks.
         Should not return itself in the list.
         '''
-        #### YOUR CODE HERE #####
-        #### Think about edge conditions!
-        raise Exception("get_block_neighbors not implemented")
-       
+        
+        def get_neighbors(x,y):
+            x_axis = [x - 1, x, x + 1]
+            y_axis = [y - 1, y, y + 1]
+            neighs = [(a, b) for a in x_axis for b in y_axis]
+            neighs.remove((x,y))
+            return neighs
+
+        def remove_invalid(block_coord):
+            x, y = block_coord
+            test1 = x >= 0 and x < BOARD_WIDTH
+            test2 = y >= 0 and y < BOARD_HEIGHT
+            return test1 and test2
+
+        valid_coords = filter(remove_invalid, get_neighbors(*block.get_coords()))
+        return [self.block_list[coord] for coord in valid_coords]
+        
 
     def simulate(self):
         '''
@@ -270,16 +282,16 @@ if __name__ == '__main__':
     board = Board(win, BOARD_WIDTH, BOARD_HEIGHT)
 
     ## PART 1: Make sure that the board __init__ method works    
-    board.random_seed(.15)
+    # board.random_seed(.15)
 
     ## PART 2: Make sure board.seed works. Comment random_seed above and uncomment
     ##  one of the seed methods below
-    # board.seed(toad_blocklist)
+    #board.seed(toad_blocklist)
 
     ## PART 3: Test that neighbors work by commenting the above and uncommenting
     ## the following two lines:
-    # board.seed(neighbor_test_blocklist)
-    # test_neighbors(board)
+    board.seed(neighbor_test_blocklist)
+    test_neighbors(board)
 
 
     ## PART 4: Test that simulate() works by uncommenting the next two lines:
